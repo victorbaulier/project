@@ -41,4 +41,11 @@ class Level:
                     window.blit(wall,(x,y))
                 case_number+=1
             line_number+=1
+    
+    class Player:    #we creatte a class with all informations and fonctions of the worm
+
+    def __init__(self):
+
+        self.player=pygame.image.load('pictures/worms.png').convert_alpha() #picture of the worm
+
 
