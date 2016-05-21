@@ -5,7 +5,6 @@ from pygame.locals import *
 from classs import *
 from constant import *
 
-continu=1
 continu_game=1
 
 pygame.init()
