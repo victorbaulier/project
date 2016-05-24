@@ -1,4 +1,4 @@
-# Créé par victor, le 20/05/2016 en Python 3.2
+﻿# Créé par victor, le 20/05/2016 en Python 3.2
 
 import pygame
 from pygame.locals import *
@@ -59,6 +59,11 @@ class Player:
         self.level=level
         self.player=pygame.image.load('pictures/worms.png').convert_alpha()
 
+    def fall(self):
+        while (self.level.structure[self.place_y+1][self.place_x]!='w'):
+            self.place_y+=1
+            self.y=self.place_y*sprite_size
+
 
     def movements(self,direction):
         if direction=='right':
@@ -66,3 +71,18 @@ class Player:
                 if self.level.structure[self.place_y][self.place_x+1]!='w':     #checking if there is no wall on the next position
                     self.place_x+=1
                     self.x=self.place_x*sprite_size
+                    self.fall()
+
+        if direction=='left':
+            if self.place_x>0:
+                if self.level.structure[self.place_y][self.place_x-1]!='w':
+                    self.place_x-=1
+                    self.x=self.place_x*sprite_size
+                    self.fall()
+
+
+
+
+
+
+

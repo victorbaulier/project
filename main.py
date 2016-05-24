@@ -1,4 +1,4 @@
-# Créé par victor, le 20/05/2016 en Python 3.2
+﻿# Créé par victor, le 20/05/2016 en Python 3.2
 import pygame
 from pygame.locals import *
 
@@ -28,6 +28,8 @@ while(continu_game):            #this is the playing loop
         if event.type== KEYDOWN:
             if event.key==K_RIGHT:
                 worm.movements('right')
+            elif event.key==K_LEFT:
+                worm.movements('left')
 
 
 
