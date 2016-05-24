@@ -71,14 +71,75 @@ class Player:
                 if self.level.structure[self.place_y][self.place_x+1]!='w':     #checking if there is no wall on the next position
                     self.place_x+=1
                     self.x=self.place_x*sprite_size
-                    self.fall()
+                self.fall()
 
-        if direction=='left':
+        elif direction=='left':
             if self.place_x>0:
                 if self.level.structure[self.place_y][self.place_x-1]!='w':
                     self.place_x-=1
                     self.x=self.place_x*sprite_size
-                    self.fall()
+                self.fall()
+
+        elif direction=='up':
+            if self.place_y>0:  #the worm can only jump if there is a wall under his "feet".   the worm can only jump once
+                if self.level.structure[self.place_y-1][self.place_x]!='w' and self.level.structure[self.place_y+1][self.place_x]=='w':
+                    self.place_y-=1
+                    self.y=self.place_y*sprite_size
+
+
+
+
+class Trolley:
+    def __init__(self,level,structure):
+
+        self.place_y=0
+        self.place_x=0
+
+        self.x=0
+        self.y=0
+
+        self.level=level
+        self.trolley=pygame.image.load('pictures/trolley.png').convert_alpha()
+        self.structure=structure
+
+
+    def put_initial_position(self): #we read the entire file and find where at which coordonates is the trolley.
+                                    #then the trolley is put at these coordonates
+        for i in range (len(self.structure)):
+            for j in range (len(self.structure[i])):
+                if self.structure[i][j] == 'T':
+
+                    self.place_x=j
+                    self.place_y=i
+                    self.x=j*sprite_size
+                    self.y=i*sprite_size
+    def fall(self):
+        if(self.level.structure[self.place_y+1][self.place_x])!='w':
+            while (self.level.structure[self.place_y+1][self.place_x]!='w'):
+                self.place_y+=1
+                self.y=self.place_y*sprite_size
+
+    def movement(self,worm_position_x,worm_position_y,direction):
+        if direction=='right':
+            if self.place_x<(sprite_number -1):
+                if (self.place_x==worm_position_x)and(self.place_y==worm_position_y):
+                    if self.level.structure[self.place_y][self.place_x+1]!='w':
+                        self.place_x+=1
+                        self.x=self.place_x*sprite_size
+                        self.fall()
+
+        elif direction=='left':
+            if self.place_x>0:
+                if (self.place_x==worm_position_x)and(worm_position_y==self.place_y):
+                    if self.level.structure[self.place_y][self.place_x-1]!='w':
+                        self.place_x-=1
+                        self.x=self.place_x*sprite_size
+                        self.fall()
+
+
+
+
+
 
 
 
