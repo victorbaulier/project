@@ -1,4 +1,4 @@
-﻿# Créé par victor, le 20/05/2016 en Python 3.2
+# Créé par victor, le 20/05/2016 en Python 3.2
 
 import pygame
 from pygame.locals import *
@@ -59,26 +59,46 @@ class Player:
         self.level=level
         self.player=pygame.image.load('pictures/worms.png').convert_alpha()
 
-    def fall(self):
-        while (self.level.structure[self.place_y+1][self.place_x]!='w'):
+    def fall_until_wall(self):
+        if(self.level.structure[self.place_y+1][self.place_x])!='w':
+            while (self.level.structure[self.place_y+1][self.place_x]!='w'):
+                self.place_y+=1
+                self.y=self.place_y*sprite_size
+
+    def fall_until_trolley(self):
+        while (self.level.structure[self.place_y+2][self.place_x]!='w'):
             self.place_y+=1
             self.y=self.place_y*sprite_size
 
 
-    def movements(self,direction):
+    def fall(self,trolley_position_x,trolley_position_y):
+        if ((self.level.structure[self.place_y+1][self.place_x]!='w') and (self.place_y<trolley_position_y-1) and (self.place_x==trolley_position_x)) : #the worm doesn't fall through the trolley
+            self.fall_until_trolley()
+        elif(((self.level.structure[self.place_y+1][self.place_x]!='w') and not (self.place_y<trolley_position_y) and not (self.place_x==trolley_position_x))):
+            self.fall_until_wall()
+        elif(((self.level.structure[self.place_y+1][self.place_x]!='w') and (self.place_y==trolley_position_y) and not (self.place_x==trolley_position_x))):
+            self.fall_until_wall()
+        elif (((self.level.structure[self.place_y+1][self.place_x]!='w') and not (self.place_y<trolley_position_y-1) and not (self.place_x==trolley_position_x))):
+            self.fall_until_wall()
+        elif (((self.level.structure[self.place_y+1][self.place_x]!='w') and  (self.place_y>trolley_position_y) and (self.place_x==trolley_position_x))): #the worm can fall until a wall even if the worm has an Y higher than the trolley's one
+            self.fall_until_wall()
+        elif ((self.level.structure[self.place_y+1][self.place_x]!='w') and (self.place_y<trolley_position_y-1) and not (self.place_x==trolley_position_x)) :
+            self.fall_until_wall()
+
+    def movements(self,trolley_position_x,trolley_position_y, direction):
         if direction=='right':
             if self.place_x<(sprite_number-1):      #checking if the next position isn't outside the window
                 if self.level.structure[self.place_y][self.place_x+1]!='w':     #checking if there is no wall on the next position
                     self.place_x+=1
                     self.x=self.place_x*sprite_size
-                self.fall()
+                self.fall(trolley_position_x,trolley_position_y)
 
         elif direction=='left':
             if self.place_x>0:
                 if self.level.structure[self.place_y][self.place_x-1]!='w':
                     self.place_x-=1
                     self.x=self.place_x*sprite_size
-                self.fall()
+                self.fall(trolley_position_x,trolley_position_y)
 
         elif direction=='up':
             if self.place_y>0:  #the worm can only jump if there is a wall under his "feet".   the worm can only jump once
@@ -113,11 +133,14 @@ class Trolley:
                     self.place_y=i
                     self.x=j*sprite_size
                     self.y=i*sprite_size
+
     def fall(self):
         if(self.level.structure[self.place_y+1][self.place_x])!='w':
             while (self.level.structure[self.place_y+1][self.place_x]!='w'):
                 self.place_y+=1
                 self.y=self.place_y*sprite_size
+
+
 
     def movement(self,worm_position_x,worm_position_y,direction):
         if direction=='right':
