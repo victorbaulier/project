@@ -3,6 +3,7 @@
 import pygame
 from pygame.locals import *
 from constant import *
+from random import randrange
 
 
 class Level:
@@ -30,6 +31,7 @@ class Level:
 
         #images are loaded
         wall=pygame.image.load(picture_wall).convert()
+        teleport=pygame.image.load(picture_teleport).convert()
         #the programm reads the structure and find the different letters.
 
 
@@ -43,6 +45,8 @@ class Level:
         # and the images corresponding to the letters are placed in the window at the right coordonates
                 if letter=='w':
                     window.blit(wall,(x,y))
+                if letter=='T' or letter=='S':
+                    window.blit(teleport,(x,y))
                 case_number+=1
             line_number+=1
 
@@ -84,6 +88,17 @@ class Player:
             self.fall_until_wall()
         elif ((self.level.structure[self.place_y+1][self.place_x]!='w') and (self.place_y<trolley_position_y-1) and not (self.place_x==trolley_position_x)) :
             self.fall_until_wall()
+
+    def teleport(self,position_out_x,position_out_y,direction): #when the worm goes in the in-door
+        if direction=='right':                                              #it goes directly at the out-door
+            if (self.level.structure[self.place_y][self.place_x]=='T'):
+
+                self.place_x=position_out_x+1
+                self.place_y=position_out_y
+
+                self.x=self.place_x*sprite_size
+                self.y=self.place_y*sprite_size
+
 
     def movements(self,trolley_position_x,trolley_position_y, direction):
         if direction=='right':
@@ -158,6 +173,98 @@ class Trolley:
                         self.place_x-=1
                         self.x=self.place_x*sprite_size
                         self.fall()
+
+
+class Teleport():
+    def __init__(self,structure):
+        self.position_out_x=0
+        self.position_out_y=0
+
+        self.structure=structure
+
+    def find_position(self):
+        for i in range (len(self.structure)):
+            for j in range (len(self.structure[i])):
+                if self.structure[i][j] == 'S':     #we find where is the out-door
+
+                    self.position_out_x=j
+                    self.position_out_y=i
+
+
+class Ennemy():
+    def __init__(self, structure,level):
+
+        self.picture=pygame.image.load('pictures/worms.png').convert_alpha()
+
+        self.place_x=0
+        self.place_y=0
+        self.random=0
+
+        self.x=0
+        self.y=0
+
+        self.structure=structure
+
+
+        self.level=level
+
+    def find_position_init(self):
+        for i in range (len(self.structure)):
+            for j in range (len(self.structure[i])):
+                if self.structure[i][j] == 'B':
+
+                    self.place_x=j
+                    self.place_y=i
+                    self.x=j*sprite_size
+                    self.y=i*sprite_size
+
+
+
+    def find_direction(self,count):
+
+        if count%30==0:            #this condition is to have a movement every seconds
+
+            random=randrange(1,3)       #the movement is defined randomly
+
+
+            if random==1:
+                return('right')
+
+            elif(random==2):
+                return('left')
+
+
+
+
+
+    def movement(self,trolley_position_x,trolley_position_y,direction):           #the same kind of movement than the worm's one, just the ennemy doesn't fell
+
+        if direction=='right':
+            if self.place_x<(sprite_number-1):
+                if (self.level.structure[self.place_y][self.place_x+1]!='w'):
+                    if not ((trolley_position_y==self.place_y)and (trolley_position_x==self.place_x+1)):
+
+                        self.place_x+=1
+                        self.x=self.place_x*sprite_size
+                else:
+                    self.movement(trolley_position_x,trolley_position_y,'left')   #this line is to make the movement more fluid. the ennemy won't stay at the same place if there is a wall in front of him
+
+        elif direction=='left':
+            if self.place_x>0:
+                if (self.level.structure[self.place_y][self.place_x-1]!='w'):
+                    if not ((trolley_position_y==self.place_y)and (trolley_position_x==self.place_x-1)):
+                        self.place_x-=1
+                        self.x=self.place_x*sprite_size
+                else:
+                    self.movement(trolley_position_x,trolley_position_y,'right') #simplement pour fluidifier le mouvement, le mechant ne peut pas rester  planté devant un mur
+
+
+
+
+
+
+
+
 
 
 
